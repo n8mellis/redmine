@@ -241,4 +241,31 @@ class IssueTest < Test::Unit::TestCase
     assert !Issue.new(:due_date => nil).overdue?
     assert !Issue.new(:due_date => 1.day.ago.to_date, :status => IssueStatus.find(:first, :conditions => {:is_closed => true})).overdue?
   end
+  
+  def test_create_should_send_email_notification
+    ActionMailer::Base.deliveries.clear
+    issue = Issue.new(:project_id => 1, :tracker_id => 1, :author_id => 3, :status_id => 1, :priority => Enumeration.priorities.first, :subject => 'test_create', :estimated_hours => '1:30')
+
+    assert issue.save
+    assert_equal 1, ActionMailer::Base.deliveries.size
+  end
+  
+  def test_stale_issue_should_not_send_email_notification
+    ActionMailer::Base.deliveries.clear
+    issue = Issue.find(1)
+    stale = Issue.find(1)
+    
+    issue.init_journal(User.find(1))
+    issue.subject = 'Subjet update'
+    assert issue.save
+    assert_equal 1, ActionMailer::Base.deliveries.size
+    ActionMailer::Base.deliveries.clear
+    
+    stale.init_journal(User.find(1))
+    stale.subject = 'Another subjet update'
+    assert_raise ActiveRecord::StaleObjectError do
+      stale.save
+    end
+    assert ActionMailer::Base.deliveries.empty?
+  end
 end

@@ -26,7 +26,7 @@ class Changeset < ActiveRecord::Base
   acts_as_event :title => Proc.new {|o| "#{l(:label_revision)} #{o.revision}" + (o.short_comments.blank? ? '' : (': ' + o.short_comments))},
                 :description => :long_comments,
                 :datetime => :committed_on,
-                :url => Proc.new {|o| {:controller => 'repositories', :action => 'revision', :id => o.repository.project_id, :rev => o.revision}}
+                :url => Proc.new {|o| {:controller => 'repositories', :action => 'revision', :id => o.repository.project, :rev => o.revision}}
                 
   acts_as_searchable :columns => 'comments',
                      :include => {:repository => :project},
@@ -35,7 +35,7 @@ class Changeset < ActiveRecord::Base
                      
   acts_as_activity_provider :timestamp => "#{table_name}.committed_on",
                             :author_key => :user_id,
-                            :find_options => {:include => {:repository => :project}}
+                            :find_options => {:include => [:user, {:repository => :project}]}
   
   validates_presence_of :repository_id, :revision, :committed_on, :commit_date
   validates_uniqueness_of :revision, :scope => :repository_id
@@ -113,7 +113,6 @@ class Changeset < ActiveRecord::Base
           issue.status = fix_status
           issue.done_ratio = done_ratio if done_ratio
           issue.save
-          Mailer.deliver_issue_edit(journal) if Setting.notified_events.include?('issue_updated')
         end
       end
       referenced_issues += target_issues

@@ -503,6 +503,21 @@ class IssuesControllerTest < Test::Unit::TestCase
     assert [mail.bcc, mail.cc].flatten.include?(User.find(3).mail)
   end
   
+  def test_post_new_should_send_a_notification
+    ActionMailer::Base.deliveries.clear
+    @request.session[:user_id] = 2
+    post :new, :project_id => 1, 
+               :issue => {:tracker_id => 3,
+                          :subject => 'This is the test_new issue',
+                          :description => 'This is the description',
+                          :priority_id => 5,
+                          :estimated_hours => '',
+                          :custom_field_values => {'2' => 'Value for field 2'}}
+    assert_redirected_to :action => 'show'
+    
+    assert_equal 1, ActionMailer::Base.deliveries.size
+  end
+  
   def test_post_should_preserve_fields_values_on_validation_failure
     @request.session[:user_id] = 2
     post :new, :project_id => 1, 
@@ -681,6 +696,8 @@ class IssuesControllerTest < Test::Unit::TestCase
     
     mail = ActionMailer::Base.deliveries.last
     assert mail.body.include?("Status changed from New to Assigned")
+    # subject should contain the new status
+    assert mail.subject.include?("(#{ IssueStatus.find(2).name })")
   end
   
   def test_post_edit_with_note_only
@@ -760,6 +777,20 @@ class IssuesControllerTest < Test::Unit::TestCase
     # No email should be sent
     assert ActionMailer::Base.deliveries.empty?
   end
+
+  def test_post_edit_should_send_a_notification
+    @request.session[:user_id] = 2
+    ActionMailer::Base.deliveries.clear
+    issue = Issue.find(1)
+    old_subject = issue.subject
+    new_subject = 'Subject modified by IssuesControllerTest#test_post_edit'
+    
+    post :edit, :id => 1, :issue => {:subject => new_subject,
+                                     :priority_id => '6',
+                                     :category_id => '1' # no change
+                                    }
+    assert_equal 1, ActionMailer::Base.deliveries.size
+  end
   
   def test_post_edit_with_invalid_spent_time
     @request.session[:user_id] = 2
@@ -795,6 +826,22 @@ class IssuesControllerTest < Test::Unit::TestCase
     assert_equal '125', issue.custom_value_for(2).value
     assert_equal 'Bulk editing', journal.notes
     assert_equal 1, journal.details.size
+  end
+
+  def test_bullk_edit_should_send_a_notification
+    @request.session[:user_id] = 2
+    ActionMailer::Base.deliveries.clear
+    post(:bulk_edit,
+         {
+           :ids => [1, 2],
+           :priority_id => 7,
+           :assigned_to_id => '',
+           :custom_field_values => {'2' => ''},
+           :notes => 'Bulk editing'
+         })
+
+    assert_response 302
+    assert_equal 2, ActionMailer::Base.deliveries.size
   end
 
   def test_bulk_edit_custom_field

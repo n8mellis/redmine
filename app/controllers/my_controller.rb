@@ -108,7 +108,7 @@ class MyController < ApplicationController
     session[:page_layout] = @blocks
     %w(top left right).each {|f| session[:page_layout][f] ||= [] }
     @block_options = []
-    BLOCKS.each {|k, v| @block_options << [l_or_humanize(v), k.dasherize]}
+    BLOCKS.each {|k, v| @block_options << [l("my.blocks.#{v}", :default => [v, v.to_s.humanize]), k.dasherize]}
   end
   
   # Add a block to user's page
@@ -139,8 +139,8 @@ class MyController < ApplicationController
   # params[:list-(top|left|right)] : array of block ids of the group
   def order_blocks
     group = params[:group]
-    if group.is_a?(Array)
-      group_items = params["list-#{group}"].collect(&:underscore)
+    if group.is_a?(String)
+      group_items = (params["list-#{group}"] || []).collect(&:underscore)
       if group_items and group_items.is_a? Array
         # remove group blocks if they are presents in other groups
         %w(top left right).each {|f|

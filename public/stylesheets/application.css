@@ -324,6 +324,16 @@ p.other-formats { text-align: right; font-size:0.9em; color: #666; }
 
 a.atom { background: url(../images/feed.png) no-repeat 1px 50%; padding: 2px 0px 3px 16px; }
 
+/* Project members tab */
+div#tab-content-members .splitcontentleft { width: 64% }
+div#tab-content-members .splitcontentright { width: 34% }
+div#tab-content-members fieldset { padding:1em; margin-bottom: 1em; }
+div#tab-content-members fieldset legend { font-weight: bold; }
+div#tab-content-members fieldset label { display: block; }
+div#tab-content-members fieldset div { max-height: 400px; overflow:auto; }
+
+* html div#tab-content-members fieldset div { height: 450px; }
+
 /***** Flash & error messages ****/
 #errorExplanation, div.flash, .nodata, .warning {
     padding: 4px 4px 4px 30px;
@@ -476,6 +486,36 @@ border-bottom: 1px solid #fff;
 background-color: #fff;
 }
 
+/***** Auto-complete *****/
+div.autocomplete {
+  position:absolute;
+  width:250px;
+  background-color:white;
+  margin:0;
+  padding:0;
+}
+div.autocomplete ul {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+div.autocomplete ul li.selected { background-color: #ffb;}
+div.autocomplete ul li {
+  list-style-type:none;
+  display:block;
+  margin:0;
+  padding:2px;
+  cursor:pointer;
+  font-size: 90%;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+div.autocomplete ul li span.informal {
+  font-size: 80%;
+  color: #aaa;
+}
+
 /***** Diff *****/
 .diff_out { background: #fcc; }
 .diff_in { background: #cfc; }
@@ -625,7 +665,6 @@ vertical-align: middle;
 .icon-move { background-image: url(../images/move.png); }
 .icon-save { background-image: url(../images/save.png); }
 .icon-cancel { background-image: url(../images/cancel.png); }
-.icon-file { background-image: url(../images/file.png); }
 .icon-folder { background-image: url(../images/folder.png); }
 .open .icon-folder { background-image: url(../images/folder_open.png); }
 .icon-package { background-image: url(../images/package.png); }
@@ -651,6 +690,21 @@ vertical-align: middle;
 .icon-details  { background-image: url(../images/zoom_in.png); }
 .icon-report  { background-image: url(../images/report.png); }
 .icon-comment  { background-image: url(../images/comment.png); }
+
+.icon-file { background-image: url(../images/files/default.png); }
+.icon-file.text-plain { background-image: url(../images/files/text.png); }
+.icon-file.text-x-c { background-image: url(../images/files/c.png); }
+.icon-file.text-x-csharp { background-image: url(../images/files/csharp.png); }
+.icon-file.text-x-php { background-image: url(../images/files/php.png); }
+.icon-file.text-x-ruby { background-image: url(../images/files/ruby.png); }
+.icon-file.text-xml { background-image: url(../images/files/xml.png); }
+.icon-file.image-gif { background-image: url(../images/files/image.png); }
+.icon-file.image-jpeg { background-image: url(../images/files/image.png); }
+.icon-file.image-png { background-image: url(../images/files/image.png); }
+.icon-file.image-tiff { background-image: url(../images/files/image.png); }
+.icon-file.application-pdf { background-image: url(../images/files/pdf.png); }
+.icon-file.application-zip { background-image: url(../images/files/zip.png); }
+.icon-file.application-x-gzip { background-image: url(../images/files/zip.png); }
 
 .icon22-projects { background-image: url(../images/22x22/projects.png); }
 .icon22-users { background-image: url(../images/22x22/users.png); }

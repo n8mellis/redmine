@@ -53,7 +53,7 @@ class Mailer < ActionMailer::Base
   #   issue_edit(journal) => tmail object
   #   Mailer.deliver_issue_edit(journal) => sends an email to issue recipients
   def issue_edit(journal)
-    issue = journal.journalized
+    issue = journal.journalized.reload
     redmine_headers 'Project' => issue.project.identifier,
                     'Issue-Id' => issue.id,
                     'Issue-Author' => issue.author.login
@@ -267,7 +267,8 @@ class Mailer < ActionMailer::Base
     headers 'X-Mailer' => 'Redmine',
             'X-Redmine-Host' => Setting.host_name,
             'X-Redmine-Site' => Setting.app_title,
-            'List-Id' => "<#{Setting.mail_from.to_s.gsub('@', '.')}>"
+            'Precedence' => 'bulk',
+            'Auto-Submitted' => 'auto-generated'
   end
 
   # Appends a Redmine header field (name is prepended with 'X-Redmine-')
